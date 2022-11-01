@@ -1,0 +1,49 @@
+Sub Main
+	T1:
+    Load *
+    From [lib://desktop/gk.qvd](qvd);
+    
+    LOAD
+        "Date",
+        "Invoice Number",
+        sales
+    FROM [lib://desktop/gk.xlsx]
+    (ooxml, embedded labels, table is Sheet1)
+    where Date > '$(vQvdMaxDate)'
+    ;
+
+	temp:
+    Load date(max("Date")) as maxDate
+    Resident T1;
+
+    let vMaxDate = peek('maxDate',-1,'temp');
+    trace $(vMaxDate);
+End Sub;
+
+
+if Month('$(vMaxDate)') - Month('$(vQvdMaxDate)') = 1 then
+	Trace calling main;
+    Call Main    
+    Exit Script;
+
+end if
+
+let vQvdMaxDate = AddMonths('$(vQvdMaxDate)', 1);
+
+T1:
+LOAD
+	"Date",
+	"Invoice Number",
+	sales
+FROM [lib://desktop/gk.xlsx]
+(ooxml, embedded labels, table is Sheet1)
+where "Date" <= '$(vQvdMaxDate)'
+;
+
+Store T1 Into [lib://desktop/gk.qvd](qvd);
+
+Drop Table T1;
+
+call Main
+
+Exit Script;
