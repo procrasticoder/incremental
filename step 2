@@ -1,0 +1,17 @@
+Trace $(vMaxDate) $(vQvdMaxDate);
+
+T1:
+LOAD
+	"Date",
+	"Invoice Number",
+	sales
+FROM [lib://desktop/gk.xlsx]
+(ooxml, embedded labels, table is Sheet1)
+where "Date" <= '$(vQvdMaxDate)'
+;
+
+Store T1 Into [lib://desktop/gk.qvd](qvd);
+
+Drop Table T1;
+
+Exit Script;
