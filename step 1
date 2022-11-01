@@ -1,0 +1,19 @@
+T1:
+LOAD
+	"Date",
+	"Invoice Number",
+	sales
+FROM [lib://desktop/gk.xlsx]
+(ooxml, embedded labels, table is Sheet1);
+
+temp:
+	Load date(max("Date")) as maxDate,
+	MonthEnd(max(Date),-1) as qvdMaxDate
+Resident T1;
+
+let vMaxDate = peek('maxDate',-1,'temp');
+let vQvdMaxDate = peek('qvdMaxDate',-1,'temp');
+
+Trace $(vMaxDate) $(vQvdMaxDate);
+
+Exit Script;
